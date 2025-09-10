@@ -1,0 +1,54 @@
+# Core AI and Multi-Agent Framework
+crewai>=0.28.0          # Multi-agent orchestration framework
+google-generativeai>=0.8.0  # Google Gemini AI API
+groq>=0.4.0             # Groq API for fallback LLM
+
+# Web Search and Scraping
+duckduckgo-search>=6.0.0  # Updated DuckDuckGo search API
+playwright>=1.40.0      # Modern web scraping with JavaScript support
+
+# PDF Generation and Reporting
+reportlab>=4.0.0        # Professional PDF generation
+Pillow>=10.0.0          # Image processing for reports
+
+# Configuration and Environment
+python-dotenv>=1.0.0    # Environment variable management
+pydantic>=2.0.0         # Data validation and settings management
+
+# Testing and Development
+pytest>=7.4.0           # Testing framework
+pytest-cov>=4.1.0       # Coverage reporting
+pytest-mock>=3.11.1     # Mocking utilities
+pytest-asyncio>=0.21.1  # Async testing support
+
+# Logging and Monitoring
+structlog>=23.1.0       # Structured logging (optional enhancement)
+
+# Data Processing and Analysis
+pandas>=2.0.0           # Data manipulation (for advanced analysis)
+numpy>=1.24.0           # Numerical computing
+
+# HTTP and Networking
+httpx>=0.24.0           # Modern HTTP client
+requests>=2.31.0        # HTTP library for compatibility
+
+# Utility Libraries
+click>=8.1.0            # CLI enhancement (for future CLI improvements)
+rich>=13.5.0            # Rich terminal formatting
+tqdm>=4.66.0            # Progress bars
+
+# Security and Validation
+cryptography>=41.0.0    # Security utilities
+validators>=0.22.0      # Input validation
+
+# Optional: Advanced Features
+# langchain>=0.1.0      # LangChain integration (optional)
+# chromadb>=0.4.0       # Vector database (optional)
+# streamlit>=1.28.0     # Web interface (optional)
+
+# Development Dependencies (install with pip install -r requirements-dev.txt)
+# black>=23.7.0         # Code formatting
+# isort>=5.12.0         # Import sorting  
+# flake8>=6.0.0         # Code linting
+# mypy>=1.5.0           # Type checking
+# pre-commit>=3.3.0     # Git hooks
