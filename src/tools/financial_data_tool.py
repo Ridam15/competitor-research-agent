@@ -18,31 +18,34 @@ from src.utils.logger import logger
 from src.utils.config import config
 
 class FinancialDataTool(BaseTool):
-    """Advanced financial data and market intelligence tool"""
+    """Advanced financial data integration tool for real-time market intelligence"""
     
-    name: str = "Financial Market Data Tool"
+    name: str = "Financial Data Integration Tool"
     description: str = """
-    Retrieves comprehensive financial data, market metrics, and performance analytics.
+    Provides comprehensive financial intelligence including:
+    - Real-time market capitalization and stock data
+    - Revenue analysis and profitability metrics  
+    - Investment flows and funding information
+    - Financial health assessments
+    - Comparative financial analysis
+    - Valuation metrics and analyst insights
     
-    Capabilities:
-    - Real-time stock prices and market cap
-    - Financial ratios and performance metrics
-    - Revenue, profit, and growth data
-    - Analyst ratings and price targets
-    - Market trends and sector analysis
-    - Valuation comparisons
-    
-    Input: Company ticker symbols or names
-    Output: Comprehensive financial intelligence dataset
+    Input: Company name or ticker symbol
+    Output: Comprehensive financial intelligence report
     """
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._initialize_data_sources()
+    
+    def _initialize_data_sources(self):
+        """Initialize financial data sources and APIs"""
         self.base_urls = {
-            'alpha_vantage': 'https://www.alphavantage.co/query',
-            'financial_modeling_prep': 'https://financialmodelingprep.com/api/v3',
-            'yahoo_finance': 'https://query1.finance.yahoo.com/v8/finance/chart',
-            'sec_edgar': 'https://data.sec.gov/api/xbrl/companyconcept/CIK'
+            'yahoo_finance': 'https://finance.yahoo.com',
+            'sec_edgar': 'https://www.sec.gov/edgar',
+            'crunchbase': 'https://www.crunchbase.com',
+            'marketwatch': 'https://www.marketwatch.com',
+            'seeking_alpha': 'https://seekingalpha.com'
         }
         
         # Company ticker mappings for EV industry

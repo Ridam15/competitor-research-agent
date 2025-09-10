@@ -1,9 +1,18 @@
 """
-Advanced Market Intelligence and Trend Analysis Tool
+Advanced Market Intelligence & Trend Analysis Tool
 
-Provides real-time market trends, competitive intelligence, and predictive analytics
-for strategic decision making.
+Provides comprehensive market intelligence, trend analysis, and competitive
+landscape assessment for strategic decision making.
 """
+
+from crewai.tools import BaseTool
+import json
+import re
+from datetime import datetime
+from typing import Dict, List, Any, Optional
+from textblob import TextBlob
+import pandas as pd
+from pydantic import Field
 
 import requests
 import asyncio
@@ -17,27 +26,36 @@ from textblob import TextBlob
 import re
 from src.utils.logger import logger
 
-class MarketIntelligenceTool:
-    """Advanced market intelligence and trend analysis"""
+class MarketIntelligenceTool(BaseTool):
+    """Advanced market intelligence and trend analysis tool"""
     
-    def __init__(self):
-        self.name = "Market Intelligence Tool"
-        self.description = """
-        Provides comprehensive market intelligence including:
-        - Industry trend analysis
-        - Competitive positioning insights  
-        - Market sentiment analysis
-        - Technology trend tracking
-        - Regulatory impact assessment
-        - Consumer behavior insights
-        """
-        
-        self.data_sources = {
-            'news_apis': ['NewsAPI', 'Google News', 'Reuters', 'Bloomberg'],
-            'social_media': ['Twitter API', 'Reddit', 'LinkedIn'],
-            'industry_reports': ['McKinsey', 'BCG', 'Deloitte', 'PwC'],
-            'patent_databases': ['USPTO', 'Google Patents', 'WIPO'],
-            'regulatory': ['SEC', 'FTC', 'DOT', 'EPA']
+    name: str = "Market Intelligence & Trend Analysis Tool"
+    description: str = """
+    Provides comprehensive market intelligence including:
+    - Technology trends and adoption patterns
+    - Market dynamics and competitive intensity
+    - Consumer behavior analysis
+    - Regulatory landscape assessment
+    - Industry disruption indicators
+    - Future market scenarios
+    
+    Input: Industry, market, or technology area
+    Output: Comprehensive market intelligence report
+    """
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._initialize_intelligence_sources()
+    
+    def _initialize_intelligence_sources(self):
+        """Initialize market intelligence data sources"""
+        self.intelligence_sources = {
+            'gartner': 'Market research and technology trends',
+            'forrester': 'Technology and business intelligence',
+            'idc': 'Industry analysis and forecasting',
+            'mckinsey': 'Strategic and economic insights',
+            'techcrunch': 'Technology news and trends',
+            'venturebeat': 'Technology and startup intelligence'
         }
     
     async def analyze_market_trends(self, industry: str, timeframe: str = "6months") -> Dict[str, Any]:

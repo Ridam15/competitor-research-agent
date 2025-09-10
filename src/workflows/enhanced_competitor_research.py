@@ -9,7 +9,7 @@ import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from crewai import Agent, Task, Crew, Process
-from src.tools.llm_tool import LLMTool
+from src.tools.llm_tool import LLMSummarizerTool
 from src.tools.search_tool import SearchTool
 from src.tools.scrape_tool import ScrapeTool
 from src.tools.pdf_tool import EnhancedPDFReportTool
@@ -23,7 +23,7 @@ class EnhancedAgentSystem:
     """Advanced multi-agent system for comprehensive competitor research"""
     
     def __init__(self):
-        self.llm_tool = LLMTool()
+        self.llm_tool = LLMSummarizerTool()
         self.search_tool = SearchTool()
         self.scrape_tool = ScrapeTool()
         self.pdf_tool = EnhancedPDFReportTool()

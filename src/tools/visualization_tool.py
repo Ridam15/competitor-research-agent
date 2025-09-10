@@ -1,9 +1,24 @@
 """
-Advanced Data Visualization Tool
+Professional Data Visualization & Chart Generation Tool
 
-Creates professional charts, graphs, and interactive visualizations
-for comprehensive competitor analysis reporting.
+Creates executive-grade visualizations, interactive charts, and professional
+dashboards for competitive intelligence presentations.
 """
+
+from crewai.tools import BaseTool
+import json
+import base64
+from io import BytesIO
+from datetime import datetime
+from typing import Dict, List, Any, Optional
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import pandas as pd
+import numpy as np
+from pydantic import Field
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
