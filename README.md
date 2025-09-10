@@ -338,7 +338,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: Check inline code documentation
 - **Issues**: Open GitHub issues for bugs
 - **Discussions**: Use GitHub discussions for questions
-- **Email**: [your-email@domain.com]
+- **Email**: [ridamchhapiya15@gmail.com]
 
 ---
 
