@@ -10,24 +10,16 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy requirements first for better caching
 COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright and browsers
+# Install Playwright and browsers (optional - can be skipped if causing issues)
 RUN pip install playwright && \
     playwright install chromium && \
-    playwright install-deps chromium
+    playwright install-deps chromium || echo "Playwright install failed, continuing without it"
 
 # Copy application code
 COPY . .

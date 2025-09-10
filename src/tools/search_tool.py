@@ -1,5 +1,5 @@
 from crewai.tools import BaseTool
-from ddgs import DDGS
+from duckduckgo_search import DDGS
 from src.utils.logger import logger
 import time
 import random

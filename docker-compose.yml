@@ -53,11 +53,11 @@ services:
       retries: 3
       start_period: 40s
     
-    # Default command - override as needed
-    command: ["python", "src/cli/enhanced_cli.py", "--help"]
+    # Default command - keep container running for interactive use
+    command: ["tail", "-f", "/dev/null"]
     
-    # Restart policy
-    restart: unless-stopped
+    # Restart policy - only restart if container stops unexpectedly  
+    restart: "no"
 
   # Optional: Database service for advanced caching
   cache-db:
