@@ -136,29 +136,54 @@ class EnhancedPDFReportTool(BaseTool):
         }
         
         try:
-            # Extract executive summary (first paragraph or summary section)
-            summary_match = re.search(r'(?:executive summary|summary)[:\s]*([^\.]+(?:\.[^\.]+){0,3}\.)', 
-                                    content, re.IGNORECASE)
-            if summary_match:
-                structured['executive_summary'] = summary_match.group(1).strip()
-            else:
+            # Extract executive summary (look for Executive Summary section)
+            summary_patterns = [
+                r'(?:### Executive Summary|## Executive Summary|Executive Summary)[:\s]*\n\n([^#]+?)(?=\n\n#{1,3}|\n\n[A-Z]|\Z)',
+                r'(?:executive summary|summary)[:\s]*([^\.]+(?:\.[^\.]+){0,5}\.)',
+                r'^([^#\n]+(?:\.[^\.]+){0,3}\.)'  # First substantial sentences
+            ]
+            
+            summary_found = False
+            for pattern in summary_patterns:
+                summary_match = re.search(pattern, content, re.IGNORECASE | re.DOTALL | re.MULTILINE)
+                if summary_match and len(summary_match.group(1).strip()) > 50:
+                    structured['executive_summary'] = summary_match.group(1).strip()
+                    summary_found = True
+                    break
+            
+            if not summary_found:
                 # Use first substantial paragraph as summary
-                sentences = content.split('.')[:3]
-                structured['executive_summary'] = '. '.join(sentences) + '.' if sentences else content[:300] + '...'
+                sentences = [s.strip() for s in content.split('.') if len(s.strip()) > 20][:4]
+                structured['executive_summary'] = '. '.join(sentences) + '.' if sentences else content[:400] + '...'
+
+            # Extract key findings more comprehensively
+            findings_patterns = [
+                r'(?:### Key Insights|## Key Insights|Key Insights|### Key Findings|## Key Findings|Key Findings)[:\s]*\n\n([^#]+?)(?=\n\n#{1,3}|\Z)',
+                r'(?:key findings?|findings?|insights?|takeaways?)[:\s]*([^\.]+(?:\.[^\.]+)*\.)',
+            ]
             
-            # Extract key findings (bullet points or numbered items)
-            findings_pattern = r'(?:key findings?|findings?|insights?)[:\s]*([^\.]+(?:\.[^\.]+)*\.)'
-            findings_match = re.search(findings_pattern, content, re.IGNORECASE | re.DOTALL)
-            if findings_match:
-                findings_text = findings_match.group(1)
-                # Split on bullet points or line breaks
-                findings = [f.strip() for f in re.split(r'[•\-\*\n]', findings_text) if f.strip()]
-                structured['key_findings'] = findings[:5]  # Top 5 findings
-            
-            # Extract company/competitor names
+            for pattern in findings_patterns:
+                findings_match = re.search(pattern, content, re.IGNORECASE | re.DOTALL | re.MULTILINE)
+                if findings_match:
+                    findings_text = findings_match.group(1)
+                    # Split on bullet points, asterisks, or line breaks with bullets
+                    findings = []
+                    for line in findings_text.split('\n'):
+                        line = line.strip()
+                        if line.startswith('*') or line.startswith('•') or line.startswith('-'):
+                            finding = line.lstrip('*•- ').strip()
+                            if len(finding) > 10:
+                                findings.append(finding)
+                    
+                    if findings:
+                        structured['key_findings'] = findings[:6]  # Top 6 findings
+                        break
+
+            # Extract company/competitor names more accurately
             company_patterns = [
-                r'\b([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]*)*(?:\s+Inc\.?|\s+Corp\.?|\s+LLC|\s+Ltd\.?)?)\b',
-                r'\b(Microsoft|Google|Amazon|Apple|Meta|Tesla|Netflix|Spotify|Uber|Airbnb)\b'
+                r'\*\*([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]*)*(?:\s+(?:Inc|Corp|LLC|Ltd|Group|Motors|Motor|Company))?)\*\*',  # Bold company names
+                r'\b(Tesla|BYD|Volkswagen|General Motors|Hyundai|Ford|Rivian|Lucid|Mercedes-Benz|BMW|Audi|Porsche|Kia|Genesis|Chevrolet|Cadillac)\b',  # Known EV companies
+                r'([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]*)+)(?=:|\s+[-–])',  # Company names followed by colon or dash
             ]
             
             competitors_found = set()
@@ -167,17 +192,46 @@ class EnhancedPDFReportTool(BaseTool):
                 for match in matches:
                     if isinstance(match, tuple):
                         match = match[0]
-                    if (len(match.split()) <= 3 and  # Not too long
-                        match not in ['The', 'This', 'That', 'With', 'From'] and  # Not articles
-                        len(match) > 2):  # Not too short
+                    
+                    # Clean up and validate company name
+                    match = match.strip()
+                    if (3 <= len(match) <= 50 and  # Reasonable length
+                        match not in ['The', 'This', 'That', 'With', 'From', 'Market', 'Analysis', 'Report'] and  # Not common words
+                        not match.lower().startswith('http') and  # Not URLs
+                        re.search(r'[A-Za-z]', match)):  # Contains letters
                         competitors_found.add(match.title())
             
-            structured['competitors'] = list(competitors_found)[:8]  # Top 8 competitors
+            structured['competitors'] = list(competitors_found)[:10]  # Top 10 competitors
             
-            # Extract recommendations
-            rec_pattern = r'(?:recommend|suggestion|should|advice)[s]?[:\s]*([^\.]+\.(?:[^\.]+\.){0,2})'
-            rec_matches = re.findall(rec_pattern, content, re.IGNORECASE)
-            structured['recommendations'] = [rec.strip() for rec in rec_matches[:4]]
+            # Extract recommendations more accurately
+            rec_patterns = [
+                r'(?:### Strategic Recommendations|## Strategic Recommendations|Strategic Recommendations|### Recommendations|## Recommendations|Recommendations)[:\s]*\n\n([^#]+?)(?=\n\n#{1,3}|\Z)',
+                r'(?:recommend|suggestion|should|advice|strategy)[s]?[:\s]*([^\.]+\.(?:[^\.]+\.){0,2})',
+            ]
+            
+            for pattern in rec_patterns:
+                rec_matches = re.findall(pattern, content, re.IGNORECASE | re.DOTALL | re.MULTILINE)
+                if rec_matches:
+                    if isinstance(rec_matches[0], str) and len(rec_matches[0]) > 100:
+                        # Extract recommendations from a section
+                        rec_text = rec_matches[0]
+                        recommendations = []
+                        for line in rec_text.split('\n'):
+                            line = line.strip()
+                            if line.startswith('*') or line.startswith('•') or line.startswith('-'):
+                                rec = line.lstrip('*•- ').strip()
+                                if len(rec) > 15:
+                                    recommendations.append(rec)
+                        
+                        if recommendations:
+                            structured['recommendations'] = recommendations[:5]
+                            break
+                    else:
+                        # Individual recommendation sentences
+                        recommendations = [rec.strip() for rec in rec_matches if len(rec.strip()) > 15]
+                        if recommendations:
+                            structured['recommendations'] = recommendations[:5]
+                            break
             
         except Exception as e:
             logger.warning(f"Failed to extract structured data: {e}")
@@ -453,15 +507,38 @@ class EnhancedPDFReportTool(BaseTool):
             for rec in structured_data.get('recommendations', ['Further analysis recommended.']):
                 story.append(Paragraph(f"• {rec}", styles['body']))
             
-            # Add raw content preview
+            # Add complete analysis content instead of just preview
             story.append(PageBreak())
             story.append(Paragraph("Detailed Analysis", styles['section_header']))
             raw_content = structured_data.get('raw_content', summary)
-            # Split into paragraphs and add to story
-            paragraphs = raw_content.split('\n\n')
-            for paragraph in paragraphs[:10]:  # Limit to 10 paragraphs
-                if paragraph.strip():
-                    story.append(Paragraph(paragraph.strip(), styles['body']))
+            
+            # Process the full content with proper markdown-style formatting
+            if raw_content:
+                # Split on multiple newlines for section breaks
+                sections = raw_content.split('\n\n')
+                for section in sections:
+                    if section.strip():
+                        # Check if it's a header (starts with ### or ##)
+                        if section.strip().startswith('###'):
+                            header_text = section.strip().replace('###', '').strip()
+                            story.append(Paragraph(header_text, styles['subsection']))
+                        elif section.strip().startswith('##'):
+                            header_text = section.strip().replace('##', '').strip()
+                            story.append(Paragraph(header_text, styles['section_header']))
+                        elif section.strip().startswith('#'):
+                            header_text = section.strip().replace('#', '').strip()
+                            story.append(Paragraph(header_text, styles['title']))
+                        else:
+                            # Regular content - preserve bullet points and formatting
+                            lines = section.split('\n')
+                            for line in lines:
+                                if line.strip():
+                                    if line.strip().startswith('*') or line.strip().startswith('-'):
+                                        # Bullet point
+                                        bullet_text = line.strip().replace('*', '•').replace('-', '•')
+                                        story.append(Paragraph(bullet_text, styles['body']))
+                                    else:
+                                        story.append(Paragraph(line.strip(), styles['body']))
             
             # Build PDF
             doc.build(story)
