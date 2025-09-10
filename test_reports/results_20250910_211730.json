@@ -1,0 +1,19 @@
+{
+  "success": false,
+  "return_code": 1,
+  "execution_time": 3.342203140258789,
+  "timestamp": "20250910_211730",
+  "category": "unit",
+  "stats": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "coverage": null,
+  "stdout": "\n==================================== ERRORS ====================================\n\u001b[31m\u001b[1m________________ ERROR collecting tests/test_enhanced_tools.py _________________\u001b[0m\n'integration' not found in `markers` configuration option\n------------------------------- Captured stdout --------------------------------\n2025-09-10 21:17:33,306 - INFO - competitor_research_agent - Enhanced logging system initialized\n2025-09-10 21:17:33,538 - INFO - competitor_research_agent - Gemini API configured successfully\n\u001b[33m=============================== warnings summary ===============================\u001b[0m\nsrc/utils/logger.py:43\nsrc/utils/logger.py:43\nsrc/utils/logger.py:43\nsrc/utils/logger.py:43\n  /Users/ridam.chhapiya/Downloads/MyProd/competitor-research-agent/src/utils/logger.py:43: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    'timestamp': datetime.utcnow().isoformat(),\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: /Users/ridam.chhapiya/Downloads/MyProd/competitor-research-agent/test_reports/junit_20250910_211730.xml -\n- Generated html report: file:///Users/ridam.chhapiya/Downloads/MyProd/competitor-research-agent/test_reports/report_20250910_211730.html -\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[31mERROR\u001b[0m tests/test_enhanced_tools.py - Failed: 'integration' not found in `markers` configuration option\n\u001b[31m!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\u001b[0m\n\u001b[31m\u001b[33m4 warnings\u001b[0m, \u001b[31m\u001b[1m1 error\u001b[0m\u001b[31m in 2.29s\u001b[0m\u001b[0m\n",
+  "stderr": "",
+  "command": "python -m pytest -m unit -q -x --tb=short --strict-markers --color=yes --durations=10 --junitxml=test_reports/junit_20250910_211730.xml --html=test_reports/report_20250910_211730.html --self-contained-html"
+}

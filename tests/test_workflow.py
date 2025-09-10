@@ -2,6 +2,7 @@ import pytest
 from src.workflows.competitor_research import create_workflow
 from crewai import CrewOutput
 
+@pytest.mark.integration
 def test_workflow_basic():
     """Test basic workflow execution"""
     result = create_workflow("test AI companies")
@@ -19,6 +20,7 @@ def test_workflow_basic():
     # Check for successful PDF generation
     assert "pdf" in result_str, f"Expected 'pdf' in result, got: {result}"
 
+@pytest.mark.integration
 def test_workflow_with_different_queries():
     """Test workflow with various query types"""
     test_queries = [
@@ -42,6 +44,7 @@ def test_workflow_with_different_queries():
                 "error" in result_str.lower() or 
                 "failed" in result_str.lower()), f"Unexpected result format: {result_str}"
 
+@pytest.mark.integration  
 def test_workflow_error_handling():
     """Test workflow handles empty/invalid queries gracefully"""
     result = create_workflow("")

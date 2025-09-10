@@ -1,6 +1,7 @@
 import pytest
 from src.tools.search_tool import SearchTool
 
+@pytest.mark.unit
 def test_search_tool_initialization():
     """Test that SearchTool can be initialized properly"""
     tool = SearchTool()
@@ -8,6 +9,7 @@ def test_search_tool_initialization():
     assert "Advanced web search tool" in tool.description
     assert hasattr(tool, '_run')
 
+@pytest.mark.unit
 def test_search_tool_basic_functionality():
     """Test basic search functionality with a simple query"""
     tool = SearchTool()

@@ -1,0 +1,93 @@
+# Docker Compose for Competitor Research Agent
+version: '3.8'
+
+services:
+  competitor-research-agent:
+    build: .
+    image: competitor-research-agent:latest
+    container_name: cra-main
+    environment:
+      # API Keys - Override with your keys
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      
+      # Performance Settings
+      - ENABLE_CACHING=true
+      - CACHE_TTL_HOURS=24
+      - MAX_CONCURRENT_REQUESTS=5
+      - REQUEST_TIMEOUT_SECONDS=30
+      
+      # Logging Configuration
+      - LOG_LEVEL=INFO
+      - ENABLE_PERFORMANCE_MONITORING=true
+      - ENABLE_ERROR_TRACKING=true
+      
+      # Output Settings
+      - DEFAULT_OUTPUT_FORMAT=pdf
+      - DEFAULT_THEME=professional
+      - AUTO_OPEN_REPORTS=false
+      
+    volumes:
+      # Persistent storage for reports
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      
+    working_dir: /app
+    
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "from src.utils.config import validate_configuration; exit(0 if validate_configuration() else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Default command - override as needed
+    command: ["python", "src/cli/enhanced_cli.py", "--help"]
+    
+    # Restart policy
+    restart: unless-stopped
+
+  # Optional: Database service for advanced caching
+  cache-db:
+    image: postgres:13-alpine
+    container_name: cra-db
+    environment:
+      POSTGRES_DB: cra_cache
+      POSTGRES_USER: cra_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    profiles: ["with-database"]
+
+  # Optional: Redis for session management  
+  redis-cache:
+    image: redis:7-alpine
+    container_name: cra-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    profiles: ["with-redis"]
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: cra-network

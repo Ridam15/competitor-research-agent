@@ -1,0 +1,17 @@
+{
+  "queries": [
+    {
+      "query": "competitors to Tesla",
+      "date": "2025-09-10T20:57:28.815649",
+      "success": true,
+      "execution_time": 152.05728220939636
+    },
+    {
+      "query": "competitors to Tesla",
+      "date": "2025-09-10T21:06:19.849017",
+      "success": true,
+      "execution_time": 277.17017889022827
+    }
+  ],
+  "settings": {}
+}

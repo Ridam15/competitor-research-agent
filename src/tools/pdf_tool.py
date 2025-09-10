@@ -182,8 +182,9 @@ class EnhancedPDFReportTool(BaseTool):
             # Extract company/competitor names more accurately
             company_patterns = [
                 r'\*\*([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]*)*(?:\s+(?:Inc|Corp|LLC|Ltd|Group|Motors|Motor|Company))?)\*\*',  # Bold company names
-                r'\b(Tesla|BYD|Volkswagen|General Motors|Hyundai|Ford|Rivian|Lucid|Mercedes-Benz|BMW|Audi|Porsche|Kia|Genesis|Chevrolet|Cadillac)\b',  # Known EV companies
+                r'\b(Tesla|BYD|Volkswagen|General Motors|Hyundai|Ford|Rivian|Lucid|Mercedes-Benz|BMW|Audi|Porsche|Kia|Genesis|Chevrolet|Cadillac|Microsoft|Google|OpenAI|Amazon|Meta|Apple)\b',  # Known companies
                 r'([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]*)+)(?=:|\s+[-–])',  # Company names followed by colon or dash
+                r'\b(Microsoft|Google|OpenAI|Amazon|Meta|Apple|IBM|Oracle|Salesforce)\b',  # Tech companies
             ]
             
             competitors_found = set()
